@@ -1,16 +1,14 @@
 package com.etisalat.service;
 
-import com.etisalat.dto.OrderDto;
-import java.awt.print.Pageable;
+import com.etisalat.model.OrderModel;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
  * @author Ahmed Tolba
  */
-@Service
 public interface OrderService {
-    void placeOrder(OrderDto orderDto);
-    Page<OrderDto> retrieveOrders(Pageable pageable);
+    void placeOrder(OrderModel orderDto);
+    Page<OrderModel> retrieveOrders(Pageable pageable);
 }

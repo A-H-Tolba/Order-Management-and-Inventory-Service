@@ -1,11 +1,11 @@
 package com.etisalat.controller;
 
-import com.etisalat.dto.OrderDto;
+import com.etisalat.model.OrderModel;
 import com.etisalat.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
-import java.awt.print.Pageable;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,15 +26,16 @@ public class OrderController {
     
     @Operation(summary = "Place an order")
     @PostMapping("/place")
-    public ResponseEntity<Void> placeOrder(OrderDto orderDto)
+    public ResponseEntity<Void> placeOrder(OrderModel orderDto)
     {
         orderService.placeOrder(orderDto);
         return ResponseEntity.ok().build();
     }
     
+    //So far the OrderDto and the OrderModel would be identical. They can be separated and mapped however if desired
     @Operation(summary = "Retrieve user's orders")
     @GetMapping("/retrieve")
-    public ResponseEntity<Page<OrderDto>> retrieveOrders(Pageable pageable)
+    public ResponseEntity<Page<OrderModel>> retrieveOrders(Pageable pageable)
     {
         return new ResponseEntity<>(orderService.retrieveOrders(pageable), HttpStatus.ACCEPTED);
     }

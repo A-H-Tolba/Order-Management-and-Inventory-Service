@@ -23,3 +23,6 @@
 hs_err_pid*
 replay_pid*
 /order-service/OrderService/target/
+/Inventory-service/OrderService/target/
+/inventory-service/OrderService/target/
+/inventory-service/InventoryService/target/

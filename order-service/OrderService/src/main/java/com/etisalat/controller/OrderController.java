@@ -2,6 +2,7 @@ package com.etisalat.controller;
 
 import com.etisalat.dto.OrderDto;
 import com.etisalat.service.OrderService;
+import io.swagger.v3.oas.annotations.Operation;
 import java.awt.print.Pageable;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ public class OrderController {
     
     private final OrderService orderService;
     
+    @Operation(summary = "Place an order")
     @PostMapping("/place")
     public ResponseEntity<Void> placeOrder(OrderDto orderDto)
     {
@@ -30,6 +32,7 @@ public class OrderController {
         return ResponseEntity.ok().build();
     }
     
+    @Operation(summary = "Retrieve user's orders")
     @GetMapping("/retrieve")
     public ResponseEntity<Page<OrderDto>> retrieveOrders(Pageable pageable)
     {

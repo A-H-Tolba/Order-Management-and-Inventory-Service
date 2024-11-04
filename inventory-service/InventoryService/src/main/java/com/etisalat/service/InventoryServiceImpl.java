@@ -4,12 +4,12 @@ import com.etisalat.dto.InventoryDto;
 import com.etisalat.exceptions.ItemNotFoundException;
 import com.etisalat.model.ItemModel;
 import com.etisalat.repository.ItemRepository;
-import java.awt.print.Pageable;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -22,7 +22,16 @@ public class InventoryServiceImpl implements InventoryService {
     private final ItemRepository itemRepository;
     @Override
     public Page<InventoryDto> retrieveInventories(Pageable pageable) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return itemRepository.findAll(pageable).map(this::toDto);
+    }
+    
+    private InventoryDto toDto(ItemModel itemModel) {
+        InventoryDto dto = new InventoryDto();
+        dto.setItemCode(itemModel.getItemCode());
+        dto.setItemName(itemModel.getItemName());
+        dto.setItemDescription(itemModel.getItemDescription());
+        dto.setInStock(itemModel.getInStock());
+        return dto;
     }
 
     @Override

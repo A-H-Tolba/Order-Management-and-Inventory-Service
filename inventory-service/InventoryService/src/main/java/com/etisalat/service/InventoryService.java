@@ -1,10 +1,10 @@
 package com.etisalat.service;
 
 import com.etisalat.dto.InventoryDto;
-import java.awt.print.Pageable;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**

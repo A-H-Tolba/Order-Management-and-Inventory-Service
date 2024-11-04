@@ -23,7 +23,15 @@ public class ItemModel {
     @Column(nullable = false)
     private UUID itemCode;
     
+    @Column
+    private String itemName;
+    
+    @Column
+    private String itemDescription;
+    
+    @Column
     private Integer inStock;
     
+    @Column
     private Integer reserved;
 }

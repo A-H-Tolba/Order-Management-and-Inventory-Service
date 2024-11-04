@@ -1,6 +1,8 @@
 package com.etisalat.service;
 
+import com.etisalat.config.KafkaProducer;
 import com.etisalat.dto.InventoryDto;
+import com.etisalat.dto.OrderItemsDto;
 import com.etisalat.exceptions.ItemNotFoundException;
 import com.etisalat.model.ItemModel;
 import com.etisalat.repository.ItemRepository;
@@ -20,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class InventoryServiceImpl implements InventoryService {
 
     private final ItemRepository itemRepository;
+    private final KafkaProducer kafkaProducer;
+    
     @Override
     public Page<InventoryDto> retrieveInventories(Pageable pageable) {
         return itemRepository.findAll(pageable).map(this::toDto);
@@ -47,6 +51,7 @@ public class InventoryServiceImpl implements InventoryService {
                 ItemModel itemModel = optionalItemModel.get();
                 itemModel.setInStock(itemModel.getInStock() - quantity);
                 itemModel.setReserved(itemModel.getReserved() + quantity);
+                if(itemModel.getInStock() < 0) throw new ItemNotFoundException("Item With ID '" + orderId + "' Doesn't Exist");
                 itemRepository.save(itemModel);
             }
             else throw new ItemNotFoundException("Item With ID '" + orderId + "' Doesn't Exist");
@@ -54,4 +59,36 @@ public class InventoryServiceImpl implements InventoryService {
         return true;
     }
     
+    @Override
+    @Transactional(rollbackFor = ItemNotFoundException.class)
+    public void consumeInventoryCreated(OrderItemsDto orderItemsDto)
+    {
+        for(Map.Entry<UUID, Integer> entry : orderItemsDto.getItems().entrySet())
+        {
+            UUID orderId = entry.getKey();
+            Integer quantity = entry.getValue();
+            Optional<ItemModel> optionalItemModel = itemRepository.findById(orderId);
+            if(optionalItemModel.isPresent())
+            {
+                ItemModel itemModel = optionalItemModel.get();
+                itemModel.setReserved(itemModel.getReserved() - quantity);
+                if(itemModel.getReserved() < 0) 
+                {
+                    publishToKafka(orderItemsDto.getOrderId(), Boolean.FALSE);
+                    throw new ItemNotFoundException("Item With ID '" + orderId + "' Doesn't Exist");
+                }
+                itemRepository.save(itemModel);
+            }
+            else {
+                publishToKafka(orderItemsDto.getOrderId(), Boolean.FALSE);
+                throw new ItemNotFoundException("Item With ID '" + orderId + "' Doesn't Exist");
+            }
+        }
+        publishToKafka(orderItemsDto.getOrderId(), Boolean.TRUE);
+    }
+    
+    private void publishToKafka(Long orderId, Boolean creationStatus)
+    {
+        kafkaProducer.sendMessage("inventoryCreatedTopic", Map.of(orderId, creationStatus));
+    }
 }

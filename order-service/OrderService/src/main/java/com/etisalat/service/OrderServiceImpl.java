@@ -94,14 +94,14 @@ public class OrderServiceImpl implements OrderService {
         if(orderModel.isPresent())
             return orderModel.get();
         else
-            throw new UnsupportedOperationException("Order Not Found");
+            throw new RuntimeException("Order Not Found");
     }
 
     @Override
     public Page<OrderModel> retrieveOrders(Pageable pageable) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null)
-            throw new UnsupportedOperationException("Not Authenticated");
+            throw new RuntimeException("Not Authenticated");
         String username = authentication.getName();
         return orderRepository.findByUser_UserName(username, pageable);
     }

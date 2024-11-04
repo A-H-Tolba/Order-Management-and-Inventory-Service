@@ -6,6 +6,8 @@ import com.etisalat.dto.OrderItemsDto;
 import com.etisalat.exceptions.ItemNotFoundException;
 import com.etisalat.model.ItemModel;
 import com.etisalat.repository.ItemRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -90,5 +92,12 @@ public class InventoryServiceImpl implements InventoryService {
     private void publishToKafka(Long orderId, Boolean creationStatus)
     {
         kafkaProducer.sendMessage("inventoryCreatedTopic", Map.of(orderId, creationStatus));
+    }
+
+    @Override
+    public void failTimedOutReserves() {
+        List<ItemModel> itemModels = itemRepository.findByLastModifiedBefore(LocalDateTime.now().minusMinutes(30));
+        itemModels.forEach(item -> {item.setInStock(item.getInStock() + item.getReserved()); item.setReserved(0);});
+        itemRepository.saveAll(itemModels);
     }
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,4 +35,7 @@ public class ItemModel {
     
     @Column
     private Integer reserved;
+    
+    @Column
+    private LocalDateTime lastModified;
 }

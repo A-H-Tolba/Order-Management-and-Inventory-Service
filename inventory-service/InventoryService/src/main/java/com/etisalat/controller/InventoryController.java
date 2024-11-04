@@ -3,6 +3,8 @@ package com.etisalat.controller;
 import com.etisalat.dto.InventoryDto;
 import com.etisalat.service.InventoryService;
 import java.awt.print.Pageable;
+import java.util.Map;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,17 @@ public class InventoryController {
     @GetMapping("/retrieve")
     public ResponseEntity<Page<InventoryDto>> retrieveInventorys(Pageable pageable)
     {
-        return new ResponseEntity<>(inventoryService.retrieveInventorys(pageable), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(inventoryService.retrieveInventories(pageable), HttpStatus.ACCEPTED);
+    }
+    
+    @PostMapping("validateAndReserve")
+    public ResponseEntity<Boolean> validateAndReserve(Map<UUID, Integer> orderItems_quantities)
+    {
+        try {
+            return new ResponseEntity<>(inventoryService.validateAndReserve(orderItems_quantities), HttpStatus.ACCEPTED);
+        } catch(Exception e)
+        {
+            return new ResponseEntity<>(Boolean.FALSE, HttpStatus.ACCEPTED);
+        }
     }
 }

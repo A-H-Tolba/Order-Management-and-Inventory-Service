@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class KafkaProducer {
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Long> kafkaTemplate;
 
-    public KafkaProducer(KafkaTemplate<String, String> kafkaTemplate) {
+    public KafkaProducer(KafkaTemplate<String, Long> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendMessage(String topicName, String message) {
+    public void sendMessage(String topicName, Long message) {
         kafkaTemplate.send(topicName, message);
     }
 }

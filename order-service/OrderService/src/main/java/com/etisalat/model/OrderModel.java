@@ -1,7 +1,10 @@
 package com.etisalat.model;
 
+import com.etisalat.ref.OrderStatusRef;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,6 +36,9 @@ public class OrderModel {
     @Column(updatable = false, name = "created_at")
     private Date createdAt;
 
+    @Enumerated(EnumType.ORDINAL)
+    private OrderStatusRef status;
+    
     @OneToMany
     private Set<OderItemsModel> orItemsModels;
 }

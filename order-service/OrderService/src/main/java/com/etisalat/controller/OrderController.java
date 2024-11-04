@@ -32,6 +32,12 @@ public class OrderController {
         return ResponseEntity.ok().build();
     }
     
+    @Operation(summary = "Retrieve certain order", description = "Used to retrieve a specific order and to also learn the order status right after it was created.")
+    @GetMapping("/retrieve/{id}")
+    public ResponseEntity<OrderModel> retrieveOrder(Long id) {
+        return new ResponseEntity<>(orderService.retrieveOrder(id), HttpStatus.ACCEPTED);
+    }
+    
     //So far the OrderDto and the OrderModel would be identical. They can be separated and mapped however if desired
     @Operation(summary = "Retrieve user's orders")
     @GetMapping("/retrieve")

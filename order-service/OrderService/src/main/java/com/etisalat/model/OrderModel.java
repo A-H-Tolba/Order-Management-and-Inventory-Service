@@ -10,7 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +34,7 @@ public class OrderModel {
     
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.ORDINAL)
     private OrderStatusRef status;

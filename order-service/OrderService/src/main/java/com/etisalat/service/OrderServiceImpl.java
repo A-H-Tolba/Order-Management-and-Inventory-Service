@@ -7,6 +7,8 @@ import com.etisalat.model.OrderModel;
 import com.etisalat.ref.OrderStatusRef;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -102,6 +104,13 @@ public class OrderServiceImpl implements OrderService {
             throw new UnsupportedOperationException("Not Authenticated");
         String username = authentication.getName();
         return orderRepository.findByUser_UserName(username, pageable);
+    }
+
+    @Override
+    public void failTimedOutOrders() {
+        List<OrderModel> orderModels = orderRepository.findByCreatedAtBefore(LocalDateTime.now().minusMinutes(30));
+        orderModels.forEach(order -> order.setStatus(OrderStatusRef.FAILED));
+        orderRepository.saveAll(orderModels);
     }
     
 }

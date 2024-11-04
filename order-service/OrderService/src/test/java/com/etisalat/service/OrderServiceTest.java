@@ -1,6 +1,7 @@
 package com.etisalat.service;
 
 import com.etisalat.config.KafkaProducer;
+import com.etisalat.dto.OrderItemsDto;
 import com.etisalat.model.OderItemsModel;
 import com.etisalat.model.OrderModel;
 import com.etisalat.ref.OrderStatusRef;
@@ -11,10 +12,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -49,9 +52,11 @@ public class OrderServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
+    
+//    @Mock
+//    private OrderItemsDto orderItemsDto;
 
     @InjectMocks
-    @Spy
     private OrderServiceImpl orderService;
 
     private OrderModel orderModel;
@@ -79,11 +84,26 @@ public class OrderServiceTest {
         Mockito.when(restTemplate.postForEntity(Mockito.any(URI.class), Mockito.any(), ArgumentMatchers.any(Class.class)))
             .thenReturn(new ResponseEntity<>(true, HttpStatus.OK));
         
+        // Setting up expected orderItemsQuantities
+        Map<UUID, Integer> expectedOrderItemsQuantities = orderModel.getOrItemsModels()
+            .stream()
+            .collect(Collectors.toMap(OderItemsModel::getItemCode, OderItemsModel::getQuantity));
+
+        // Place the order
         orderService.placeOrder(orderModel);
-        
+
+        // Assert order status is set to PENDING
         Assertions.assertEquals(OrderStatusRef.PENDING, orderModel.getStatus());
         Mockito.verify(orderRepository).save(orderModel);
-        Mockito.verify(kafkaProducer).sendMessage("orderCreatedTopic", orderModel.getId());
+
+        // Capture the DTO sent to Kafka
+        ArgumentCaptor<OrderItemsDto> kafkaMessageCaptor = ArgumentCaptor.forClass(OrderItemsDto.class);
+        Mockito.verify(kafkaProducer).sendMessage(Mockito.eq("orderCreatedTopic"), kafkaMessageCaptor.capture());
+
+        // Assert that the captured Kafka message DTO contains the correct orderId and orderItemsQuantities
+        OrderItemsDto capturedMessage = kafkaMessageCaptor.getValue();
+        Assertions.assertEquals(orderModel.getId(), capturedMessage.getOrderId());
+        Assertions.assertEquals(expectedOrderItemsQuantities, capturedMessage.getItems());
     }
 
     @Test

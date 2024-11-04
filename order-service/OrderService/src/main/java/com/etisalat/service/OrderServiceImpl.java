@@ -1,6 +1,7 @@
 package com.etisalat.service;
 
 import com.etisalat.config.KafkaProducer;
+import com.etisalat.dto.OrderItemsDto;
 import com.etisalat.model.OderItemsModel;
 import com.etisalat.model.OrderModel;
 import com.etisalat.ref.OrderStatusRef;
@@ -45,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
         {
             orderModel.setStatus(OrderStatusRef.PENDING);
             orderRepository.save(orderModel);
-            kafkaProducer.sendMessage("orderCreatedTopic", orderModel.getId());
+            kafkaProducer.sendMessage("orderCreatedTopic", new OrderItemsDto(orderModel.getId(), orderItems_quantities));
         }
         else
         {

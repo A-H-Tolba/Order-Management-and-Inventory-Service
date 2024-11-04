@@ -1,5 +1,6 @@
 package com.etisalat.config;
 
+import com.etisalat.dto.OrderItemsDto;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 /**
@@ -8,13 +9,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class KafkaProducer {
-    private final KafkaTemplate<String, Long> kafkaTemplate;
+    private final KafkaTemplate<String, OrderItemsDto> kafkaTemplate;
 
-    public KafkaProducer(KafkaTemplate<String, Long> kafkaTemplate) {
+    public KafkaProducer(KafkaTemplate<String, OrderItemsDto> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendMessage(String topicName, Long message) {
+    public void sendMessage(String topicName, OrderItemsDto message) {
         kafkaTemplate.send(topicName, message);
     }
 }

@@ -22,7 +22,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -52,9 +51,6 @@ public class OrderServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
-    
-//    @Mock
-//    private OrderItemsDto orderItemsDto;
 
     @InjectMocks
     private OrderServiceImpl orderService;

@@ -19,7 +19,7 @@ public interface OrderService {
     OrderModel retrieveOrder(Long id);
     Page<OrderModel> retrieveOrders(Pageable pageable);
     
-    @Scheduled(cron = "*/1 * * * * *")
+    @Scheduled(cron = "0 0/30 * * * *")
     @Async
     void failTimedOutOrders();
 }

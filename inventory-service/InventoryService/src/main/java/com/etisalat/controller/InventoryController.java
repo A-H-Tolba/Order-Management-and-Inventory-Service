@@ -2,6 +2,7 @@ package com.etisalat.controller;
 
 import com.etisalat.dto.InventoryDto;
 import com.etisalat.service.InventoryService;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -25,12 +26,14 @@ public class InventoryController {
     
     private final InventoryService inventoryService;
     
+    @Operation(summary = "Retrieve all inventory in stock")
     @GetMapping("/retrieve")
     public ResponseEntity<Page<InventoryDto>> retrieveInventories(Pageable pageable)
     {
         return new ResponseEntity<>(inventoryService.retrieveInventories(pageable), HttpStatus.ACCEPTED);
     }
     
+    @Operation(summary = "Called by OrderService")
     @PostMapping("validateAndReserve")
     public ResponseEntity<Boolean> validateAndReserve(Map<UUID, Integer> orderItems_quantities)
     {
